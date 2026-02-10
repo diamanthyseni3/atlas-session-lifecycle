@@ -1,6 +1,8 @@
 # claude-session-init
 
-A Claude Code skill that bootstraps structured session context for any project. Initializes a memory bank system with templates, organizes messy project roots into clean directory structures, and generates/updates `CLAUDE.md` files.
+A Claude Code skill designed for vibe coders who have trouble organizing their folders and keeping track of their project state.
+
+The skill bootstraps structured session context for any project. Initializes a memory bank system with templates, organizes messy project roots into clean directory structures, and generates/updates `CLAUDE.md` files.
 
 ## What It Does
 
