@@ -67,7 +67,6 @@ From any project directory in Claude Code:
 
 ```
 /start
-/init
 ```
 
 Or say:
