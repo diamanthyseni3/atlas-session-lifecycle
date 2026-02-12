@@ -1,7 +1,9 @@
 # Claude Session Init — `/start` Skill for Claude Code
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/anombyte93/claude-session-init/blob/main/LICENSE)
-[![Claude Code](https://img.shields.io/badge/Claude_Code-Compatible-8A2BE2)](https://claude.ai/code)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub stars](https://img.shields.io/github/stars/anombyte93/claude-session-init)](https://github.com/anombyte93/claude-session-init/stargazers)
+[![Last Commit](https://img.shields.io/github/last-commit/anombyte93/claude-session-init)](https://github.com/anombyte93/claude-session-init/commits/main)
+[![GitHub Issues](https://img.shields.io/github/issues/anombyte93/claude-session-init)](https://github.com/anombyte93/claude-session-init/issues)
 
 Persistent project memory and lifecycle management for Claude Code. Run `/start` in any directory to bootstrap structured session context, organize files, and manage soul purpose lifecycle across sessions.
 
