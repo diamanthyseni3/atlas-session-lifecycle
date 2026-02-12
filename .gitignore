@@ -20,6 +20,5 @@ Thumbs.db
 .env
 .env.local
 
-# Backups
+# Backups (runtime only - pre-codify files are tracked for version reference)
 *.bak
-*.pre-codify

@@ -1,4 +1,4 @@
-# Claude Session Init — `/start` Skill for Claude Code
+# Claude Session Init -- `/start` Skill for Claude Code
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub stars](https://img.shields.io/github/stars/anombyte93/claude-session-init)](https://github.com/anombyte93/claude-session-init/stargazers)
@@ -6,6 +6,8 @@
 [![GitHub Issues](https://img.shields.io/github/issues/anombyte93/claude-session-init)](https://github.com/anombyte93/claude-session-init/issues)
 
 Persistent project memory and lifecycle management for Claude Code. Run `/start` in any directory to bootstrap structured session context, organize files, and manage soul purpose lifecycle across sessions.
+
+> **Featured in**: [I just delivered on a $30,000 contract thanks to Claude Code](https://www.reddit.com/r/ClaudeAI/comments/1r0n1qz/i_just_delivered_on_a_30000_contract_thanks_to/) (r/ClaudeAI)
 
 ---
 
@@ -23,21 +25,53 @@ Claude Code has no persistent memory between sessions. Every time you start a ne
 
 ---
 
-## What Changed in v2
+## What's New in v2 -- Codification
 
-**FIXED: Skill file structure** -- Was a flat `.md` file (`skills/start.md`), now uses the correct directory structure (`skills/start/SKILL.md`). Claude Code discovers skills by scanning `<name>/SKILL.md` directories. The old flat file was invisible to skill discovery, making `/start` uninvocable.
+v2 is a major architectural change: the skill is now split into a **slim orchestrator** (SKILL.md) and a **deterministic script** (session-init.py).
 
-**FIXED: Frontmatter** -- Removed invalid fields (`type`, `version`, `triggers`) that are not part of the Claude Code skill spec and were silently ignored. Added the correct fields (`name`, `description`, `user-invocable`) per the Claude Code skill specification.
+### Why Codify?
 
-**FIXED: install.sh** -- Now creates the correct directory structure (`mkdir -p skills/start/` and copies to `SKILL.md`). Also cleans up old flat files from previous installs.
+v1 was a single 867-line SKILL.md that instructed Claude to perform all operations -- file creation, validation, governance caching, context reading -- via natural language instructions interpreted at runtime. This worked, but:
 
-**NEW: Reconcile Mode** -- Lifecycle management for returning to existing projects. Auto-detects whether this is a first run (Init Mode) or a return visit (Reconcile Mode) based on whether `session-context/` exists. Reconcile Mode assesses soul purpose progress, optionally verifies with a doubt agent, and harvests durable knowledge from active context on closure.
+- **Non-deterministic**: Claude sometimes interpreted instructions differently across sessions
+- **Context-hungry**: 867 lines of instructions consumed a large portion of the context window
+- **Fragile**: File operations described in prose are harder to test and debug than actual code
 
-**NEW: Agent-driven execution** -- Delegates heavy file operations to Task agents to prevent context death spirals. The main conversation acts as a thin orchestrator. This prevents the compact-reread-compact loop that kills long sessions.
+v2 extracts all deterministic operations into `session-init.py` (548 lines, 9 subcommands). The SKILL.md drops to 203 lines and only handles what AI is actually good at: asking questions, making judgment calls, and deciding what to do next.
 
-**NEW: Claude `/init` integration** -- Layers governance sections (structure maintenance rules, session context references, immutable template rules, Ralph Loop config) on top of Claude's built-in `/init` output. Defensive caching ensures governance sections survive `/init` regeneration.
+### v2 Architecture
 
-**NEW: Ralph Loop onboarding** -- Configurable autonomous execution loop that works toward your soul purpose, checking its own work with doubt agents. Three modes: automatic (launches every `/start`), manual (invoke yourself), or skip.
+```
+~/.claude/skills/start/
+  SKILL.md          # 203 lines -- AI orchestrator (questions, judgment, continuation)
+  session-init.py   # 548 lines -- deterministic ops (9 JSON-outputting subcommands)
+```
+
+**SKILL.md** tells Claude *when* to call the script and *what to do* with the results.
+**session-init.py** handles *how* -- file operations, validation, governance caching, context parsing.
+
+### session-init.py Subcommands
+
+All commands output JSON. Run from project root.
+
+| Command | Purpose |
+|---------|---------|
+| `preflight` | Detect mode (init/reconcile), git, CLAUDE.md, templates, session files |
+| `init --soul-purpose "..." --ralph-mode "..."` | Bootstrap session-context, seed active context |
+| `validate` | Check/repair session files from templates |
+| `cache-governance` | Cache governance sections from CLAUDE.md to /tmp |
+| `restore-governance` | Restore cached governance sections after `/init` |
+| `ensure-governance --ralph-mode "..."` | Add missing governance sections to CLAUDE.md |
+| `read-context` | Read soul purpose + active context summary |
+| `harvest` | Scan active context for promotable content |
+| `archive --old-purpose "..." [--new-purpose "..."]` | Archive soul purpose, reset active context |
+
+### What Stayed the Same
+
+- Templates directory is unchanged and immutable
+- Session context file structure (5 files) is identical
+- User experience is identical -- you still just run `/start`
+- Both init mode and reconcile mode work the same way from the user's perspective
 
 ---
 
@@ -111,9 +145,23 @@ cd claude-session-init
 ./install.sh
 ```
 
-This installs:
+This installs (v2 by default):
 - The skill to `~/.claude/skills/start/SKILL.md`
+- The script to `~/.claude/skills/start/session-init.py`
 - Templates to `~/claude-session-init-templates/`
+
+### Version Toggle
+
+```bash
+# Install v2 (default) -- slim SKILL.md + session-init.py
+./install.sh
+
+# Install v1 -- monolithic SKILL.md (867 lines, no script)
+./install.sh --version v1
+
+# Revert from v2 back to v1 (backs up v2 files first)
+./install.sh --revert
+```
 
 ### Manual Install
 
@@ -121,12 +169,42 @@ This installs:
 # Create the skill directory (Claude Code requires <name>/SKILL.md structure)
 mkdir -p ~/.claude/skills/start
 
-# Copy skill file
-cp start.md ~/.claude/skills/start/SKILL.md
+# Copy v2 skill files
+cp SKILL.md ~/.claude/skills/start/SKILL.md
+cp session-init.py ~/.claude/skills/start/session-init.py
+chmod +x ~/.claude/skills/start/session-init.py
 
 # Copy templates
 mkdir -p ~/claude-session-init-templates
 cp templates/* ~/claude-session-init-templates/
+```
+
+---
+
+## File Structure
+
+```
+claude-session-init/
+  SKILL.md                  # v2 skill file (203 lines, AI orchestrator)
+  session-init.py           # v2 script (548 lines, 9 subcommands)
+  start.md                  # Legacy alias for SKILL.md
+  SKILL.md.pre-codify       # v1 SKILL.md preserved for reference
+  install.sh                # Installer with version toggle
+  v1/
+    SKILL.md                # v1 monolithic skill (867 lines)
+  templates/
+    CLAUDE-activeContext.md
+    CLAUDE-decisions.md
+    CLAUDE-mdReference.md
+    CLAUDE-patterns.md
+    CLAUDE-soul-purpose.md
+    CLAUDE-troubleshooting.md
+  README.md
+  LICENSE
+  CODE_OF_CONDUCT.md
+  CONTRIBUTING.md
+  .github/
+    FUNDING.yml
 ```
 
 ---
@@ -146,6 +224,7 @@ That is all. The skill auto-detects whether to initialize or reconcile.
 ## Requirements
 
 - [Claude Code](https://claude.ai/code) CLI
+- Python 3.6+ (for session-init.py)
 - Templates at `~/claude-session-init-templates/` (installed by `install.sh`)
 - Git (optional, but recommended -- enables `git mv` for tracked files)
 
