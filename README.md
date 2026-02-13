@@ -74,6 +74,18 @@ Triggered when `session-context/` already exists.
 - Presents lifecycle decision: **Continue**, **Close**, or **Redefine** soul purpose
 - Harvests durable knowledge on closure -- promotes decisions, patterns, and troubleshooting entries
 
+### Stepback (bundled skill)
+
+Also included: `/stepback` -- a strategic reassessment protocol for when debugging goes sideways. If you've hit the same error after 2+ fix attempts, `/stepback` forces you to zoom out:
+
+1. Inventory all fix attempts and their assumptions
+2. Find the common thread across failures
+3. Research the architecture (mandatory Perplexity queries)
+4. Test the broadest hypothesis first
+5. Present symptom-level vs architecture-level fix options
+
+Invoked separately via `/stepback` or `/atlas-session-lifecycle:stepback`.
+
 ---
 
 ## Session Memory Bank
@@ -238,7 +250,9 @@ atlas-session-lifecycle/
     plugin.json               # Plugin metadata (name, version, keywords)
   skills/
     start/
-      SKILL.md                # AI orchestrator (questions, judgment, continuation)
+      SKILL.md                # Session lifecycle orchestrator
+    stepback/
+      SKILL.md                # Strategic reassessment for stuck debugging
   scripts/
     session-init.py           # Deterministic ops (9 JSON-outputting subcommands)
   custom.md                   # User customization hook (plain English)

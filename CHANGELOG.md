@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - **Auto-Update Check**: Non-blocking notification when new version available
 - **Deterministic Backend**: Python script handles all file I/O, outputs JSON
 - **Dual-Mode Installer**: Supports both skill and plugin installation
+- **Stepback Skill**: Bundled `/stepback` strategic reassessment protocol for debugging loops
 
 ### Changed
 - SKILL.md refactored into thin orchestrator (320 lines) + Python backend (664 lines)
