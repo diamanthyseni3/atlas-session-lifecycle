@@ -390,6 +390,66 @@ All commands output JSON. Run from project root via session-ops teammate (never 
 
 ---
 
+# Work Execution: Agent Teams Enforcement
+
+> The session-lifecycle team above handles session bootstrapping. This section governs how **actual work** (implementation, PRD tasks, Ralph Loop iterations) is executed.
+
+## Rule: When 2+ Independent Tasks Exist, MUST Use Agent Teams
+
+| Condition | Action |
+|-----------|--------|
+| Soul purpose requires 2+ independent implementation tasks | **MUST** create work team via `TeamCreate` |
+| PRD/TaskMaster generates parallelizable task list | **MUST** create work team |
+| Ralph Loop with Long intensity (100+ iterations) | **MUST** create work team |
+| Single sequential task | Regular execution (no team needed) |
+
+## Work Team Pattern
+
+After brainstorm/PRD determines the work requires parallel execution, create a **separate** work team (distinct from session-lifecycle):
+
+```
+1. TeamCreate(team_name: "{project-slug}-work", description: "Soul purpose execution")
+2. Create tasks via TaskCreate with dependencies (addBlockedBy)
+3. Spawn teammates via Task tool with team_name parameter:
+   - Each teammate gets clear file ownership boundaries (directory-level)
+   - Each teammate gets explicit working directory
+   - Use subagent_type: "general-purpose" for implementation
+4. Teammates self-claim tasks from shared TaskList
+5. Lead coordinates via SendMessage — lead does NOT implement when team is active
+6. At checkpoints: lead reviews, runs verification, gates next wave
+7. On completion: SendMessage type: "shutdown_request" to all work teammates
+8. TeamDelete("{project-slug}-work")
+```
+
+## File Ownership (Prevent Merge Conflicts)
+
+When spawning work teammates, assign directory-level ownership:
+
+```
+Teammate A: owns client/src/pages/, client/src/components/
+Teammate B: owns server/services/, server/routes/
+Teammate C: owns server/__tests__/, tests/
+```
+
+No two teammates edit the same file. If overlap is unavoidable, make tasks sequential (addBlockedBy).
+
+## Anti-Patterns (NEVER)
+
+- **Ad-hoc background Task agents** without TeamCreate — breaks coordination
+- **Lead implementing** when work team is active — lead is coordinator only
+- **Spawning without file boundaries** — causes merge conflicts
+- **Forgetting shutdown** — always shut down work team after wave/phase completes
+
+## Ralph Loop + Work Team Integration
+
+When Ralph Loop is automatic AND work team is active:
+- Ralph Loop runs as the lead's iteration cycle
+- Each Ralph iteration can spawn a wave of work teammates
+- Doubt agents run between waves as verification gates
+- Work team persists across Ralph iterations; shutdown only at soul purpose completion
+
+---
+
 # Customizations
 
 > To customize `/start` behavior, create or edit `custom.md` in the plugin root directory.
