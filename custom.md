@@ -16,6 +16,13 @@
 - Example: "Check for uncommitted changes before assessing soul purpose"
 - Example: "Always show a progress percentage estimate"
 
+## During Settlement
+
+- (Add your settlement-phase customizations here)
+- Example: "Require at least 3 commits before allowing bounty settlement"
+- Example: "Always run tests before verifying soul purpose completion"
+- Example: "Skip settlement if the session was less than 10 minutes"
+
 ## Always
 
 - Keep tone direct and concise. No fluff.

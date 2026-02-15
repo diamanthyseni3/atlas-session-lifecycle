@@ -1,7 +1,7 @@
 {
   "name": "atlas-session-lifecycle",
-  "version": "2.0.0",
-  "description": "Session lifecycle management for Claude Code — persistent memory, soul purpose, reconcile, harvest, archive",
+  "version": "3.0.0",
+  "description": "Agent Teams-based session lifecycle with AtlasCoin bounty verification",
   "author": {
     "name": "Atlas AI",
     "url": "https://atlas-ai.au"
@@ -17,6 +17,17 @@
     "claude-code",
     "persistent-memory",
     "project-initialization",
-    "session-management"
-  ]
+    "session-management",
+    "agent-teams",
+    "atlascoin",
+    "bounty",
+    "verification"
+  ],
+  "config": {
+    "atlascoin_url": {
+      "type": "string",
+      "default": "http://localhost:3000",
+      "description": "AtlasCoin service endpoint for bounty tracking and settlement"
+    }
+  }
 }
