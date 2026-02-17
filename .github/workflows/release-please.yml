@@ -4,9 +4,10 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   release:
     uses: anombyte93/copilot/.github/workflows/reusable-release-please.yml@v1
-    permissions:
-      contents: write
-      pull-requests: write
