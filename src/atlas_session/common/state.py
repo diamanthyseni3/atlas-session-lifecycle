@@ -52,9 +52,12 @@ def find_section(sections: dict[str, str], key: str) -> tuple[str | None, str | 
 
 
 def read_json(path: Path) -> dict:
-    """Read a JSON file, return empty dict on failure."""
+    """Read a JSON file, return empty dict on failure or non-dict content."""
     try:
-        return json.loads(path.read_text())
+        data = json.loads(path.read_text())
+        if not isinstance(data, dict):
+            return {}
+        return data
     except Exception:
         return {}
 

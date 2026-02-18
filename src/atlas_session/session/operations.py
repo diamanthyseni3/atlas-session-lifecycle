@@ -411,7 +411,7 @@ def read_context(project_dir: str) -> dict:
     # Read soul purpose
     sp_file = sd / "CLAUDE-soul-purpose.md"
     if sp_file.is_file():
-        sp_content = sp_file.read_text()
+        sp_content = sp_file.read_text(errors="replace")
         lines = sp_content.split("\n")
         purpose_lines: list[str] = []
         for line in lines:
@@ -434,7 +434,7 @@ def read_context(project_dir: str) -> dict:
     # Read active context (first 60 lines)
     ac_file = sd / "CLAUDE-activeContext.md"
     if ac_file.is_file():
-        ac_content = ac_file.read_text()
+        ac_content = ac_file.read_text(errors="replace")
         ac_lines = ac_content.split("\n")[:60]
         result["active_context_summary"] = "\n".join(ac_lines)
 
@@ -516,10 +516,10 @@ def archive(
 
     # Preserve existing [CLOSED] entries
     if "[CLOSED]" in existing:
-        for line in existing.split("\n"):
+        lines = existing.split("\n")
+        for i, line in enumerate(lines):
             if "[CLOSED]" in line:
-                idx = existing.index(line)
-                old_archives = existing[idx:]
+                old_archives = "\n".join(lines[i:])
                 new_content = new_content.rstrip() + f"\n\n{old_archives}\n"
                 break
 
@@ -677,6 +677,8 @@ def classify_brainstorm(directive: str, project_signals: dict) -> dict:
     - no directive + empty project → full
     """
     has_directive = len(directive.split()) >= 3
+    if project_signals is None:
+        project_signals = {}
     has_content = (
         project_signals.get("has_readme", False)
         or project_signals.get("has_code_files", False)

@@ -252,20 +252,17 @@ class TestParseMdSectionsHostile:
         assert heading == "## Database Config"
         assert body == "db config body"
 
-    def test_read_json_with_non_dict_json(self, tmp_path):
-        """File containing a JSON array (not dict) is returned as-is.
+    def test_read_json_with_non_dict_json_returns_empty_dict(self, tmp_path):
+        """File containing a JSON array (not dict) returns empty dict.
 
-        read_json does json.loads() with a bare except; a valid JSON list
-        does not raise an exception, so it leaks through as a list instead
-        of returning {}.  This test documents the actual (potentially buggy)
-        behavior.
+        read_json's return type is dict, so non-dict JSON (arrays, strings,
+        numbers) should return {} to honor the type contract.
         """
         path = tmp_path / "array.json"
         path.write_text("[1, 2, 3]")
         result = read_json(path)
-        # Actual behavior: returns the list, not {}
-        assert result == [1, 2, 3]
-        assert not isinstance(result, dict)
+        assert result == {}
+        assert isinstance(result, dict)
 
     def test_write_json_raises_when_parent_dir_missing(self, tmp_path):
         """write_json does NOT create parent directories; it raises."""

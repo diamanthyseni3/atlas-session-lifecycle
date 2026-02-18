@@ -904,19 +904,46 @@ class TestReadContextHostile:
     """Hostile file content that tries to break read_context()."""
 
     def test_read_context_when_active_context_is_binary_garbage(self, project_with_session):
-        """Binary garbage in CLAUDE-activeContext.md raises UnicodeDecodeError.
+        """Binary garbage in CLAUDE-activeContext.md is handled gracefully.
 
-        read_context does Path.read_text() with no error handling, so
-        invalid UTF-8 bytes crash the function.
+        read_context uses errors='replace' so invalid UTF-8 bytes are
+        replaced with U+FFFD instead of crashing.
         """
         ac_file = project_with_session / "session-context" / "CLAUDE-activeContext.md"
         ac_file.write_bytes(b"\x80\x81\x82\xfe\xff\x00binary garbage\xff\xfe")
-        with pytest.raises(UnicodeDecodeError):
-            read_context(str(project_with_session))
+        result = read_context(str(project_with_session))
+        # Should not crash, should return a result with replacement chars
+        assert isinstance(result, dict)
+        assert "active_context_summary" in result
 
 
 class TestArchiveHostile:
     """Hostile input that tries to break archive()."""
+
+    def test_archive_duplicate_text_does_not_corrupt(self, project_with_session):
+        """Archive with purpose text that appears before [CLOSED] marker.
+
+        The old bug used existing.index(line) which could match a duplicate
+        string at the wrong position, corrupting the archive.
+        """
+        sp_file = project_with_session / "session-context" / "CLAUDE-soul-purpose.md"
+        # Set up: purpose text "Build widgets" also appears in an old closed entry
+        sp_file.write_text(
+            "# Soul Purpose\n\n"
+            "Build widgets\n\n"
+            "---\n\n"
+            "## [CLOSED] \u2014 2026-02-10\n\n"
+            "Build widgets\n"
+        )
+        result = archive(str(project_with_session), "Build widgets", "New purpose")
+        assert result["status"] == "ok"
+        content = sp_file.read_text()
+        # New purpose at top
+        assert "New purpose" in content
+        # Old [CLOSED] entry preserved (not corrupted)
+        assert "2026-02-10" in content
+        # Should have exactly 2 [CLOSED] markers (new archive + old one)
+        assert content.count("[CLOSED]") == 2
 
     def test_archive_when_purpose_contains_markdown_syntax(self, project_with_session):
         """Purpose containing ## and [CLOSED] does not corrupt the archive.
@@ -999,13 +1026,15 @@ class TestHookActivateHostile:
 class TestClassifyBrainstormHostile:
     """Hostile inputs for classify_brainstorm()."""
 
-    def test_classify_brainstorm_none_signals_crashes(self):
-        """Passing None as project_signals raises AttributeError.
+    def test_classify_brainstorm_none_signals_handled(self):
+        """Passing None as project_signals is handled gracefully.
 
-        The function does project_signals.get(...) which fails on None.
+        The function treats None signals as empty dict.
         """
-        with pytest.raises(AttributeError):
-            classify_brainstorm("Build a thing now", None)
+        result = classify_brainstorm("Build a thing now", None)
+        assert result["weight"] == "standard"  # directive + no content
+        assert result["has_directive"] is True
+        assert result["has_content"] is False
 
     def test_classify_brainstorm_empty_dict_signals(self):
         """Empty dict signals (no keys at all) returns 'full' weight."""
