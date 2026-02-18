@@ -35,7 +35,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
-      - run: pip install -e src/[test]
+      - run: pip install -e src/[test,stripe]
       - run: pytest tests/ -v --tb=short
 
   build:
