@@ -92,9 +92,7 @@ def create_checkout_session(
     price_id = _get_price_id(mode)
 
     if not price_id:
-        raise StripeNotConfigured(
-            f"STRIPE_PRICE_{'YEARLY' if mode == 'payment' else 'MONTHLY'}_ID not configured"
-        )
+        raise StripeNotConfigured(f"STRIPE_PRICE_{'YEARLY' if mode == 'payment' else 'MONTHLY'}_ID not configured")
 
     try:
         session = stripe.checkout.Session.create(

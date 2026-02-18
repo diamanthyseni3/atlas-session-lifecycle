@@ -39,6 +39,7 @@ class TestStripeConfiguration:
 
         # Reset and set stripe to None to simulate import failure
         import atlas_session.stripe_client as sc
+
         sc._STRIPE_IMPORTED = True
         sc.stripe = None
 
@@ -140,7 +141,9 @@ class TestWebhookSignature:
 
     @patch("atlas_session.stripe_client._ensure_stripe")
     @patch("atlas_session.stripe_client.stripe")
-    def test_verify_webhook_invalid_signature(self, mock_stripe, mock_ensure, monkeypatch):
+    def test_verify_webhook_invalid_signature(
+        self, mock_stripe, mock_ensure, monkeypatch
+    ):
         """Raises error for invalid signature."""
         monkeypatch.setenv("STRIPE_WEBHOOK_SECRET", "whsec_123")
         monkeypatch.setenv("STRIPE_SECRET_KEY", "sk_test_123")
@@ -149,7 +152,9 @@ class TestWebhookSignature:
             pass
 
         mock_stripe.error.SignatureVerificationError = SignatureVerificationError
-        mock_stripe.Webhook.construct_event.side_effect = SignatureVerificationError("Invalid signature")
+        mock_stripe.Webhook.construct_event.side_effect = SignatureVerificationError(
+            "Invalid signature"
+        )
 
         with pytest.raises(StripeSignatureError):
             verify_webhook_signature(b"{}", "t=123,v1=bad")
@@ -311,7 +316,9 @@ class TestValidateLicenseWithStripe:
             pass
 
         mock_stripe.error.InvalidRequestError = InvalidRequestError
-        mock_stripe.Customer.retrieve.side_effect = InvalidRequestError("No such customer")
+        mock_stripe.Customer.retrieve.side_effect = InvalidRequestError(
+            "No such customer"
+        )
 
         result = validate_license_with_stripe("cus_invalid")
 
