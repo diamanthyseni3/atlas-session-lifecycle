@@ -8,7 +8,6 @@ Covers Tasks 5, 6, 7 of the test plan:
 
 import json
 import subprocess
-from pathlib import Path
 from unittest.mock import patch
 
 import httpx
@@ -255,13 +254,20 @@ class TestEvaluatePassWhen:
 
     def test_contains_text_in_output(self):
         """'contains:text' checks for substring in output."""
-        assert _evaluate_pass_when("contains:SUCCESS", output="Test SUCCESS done") is True
+        assert (
+            _evaluate_pass_when("contains:SUCCESS", output="Test SUCCESS done") is True
+        )
         assert _evaluate_pass_when("contains:FAIL", output="Test SUCCESS done") is False
 
     def test_contains_text_in_value(self):
         """'contains:text' checks for substring in value when no output."""
-        assert _evaluate_pass_when("contains:widget", value="build widget factory") is True
-        assert _evaluate_pass_when("contains:missing", value="build widget factory") is False
+        assert (
+            _evaluate_pass_when("contains:widget", value="build widget factory") is True
+        )
+        assert (
+            _evaluate_pass_when("contains:missing", value="build widget factory")
+            is False
+        )
 
     def test_contains_returns_false_when_no_string(self):
         """'contains:text' returns False when neither output nor string value."""
@@ -966,6 +972,7 @@ class TestVerifierHostile:
     def test_file_exists_broken_symlink(self, project_with_session):
         """Broken symlink target: Path.exists() returns False, so criterion fails."""
         import os
+
         link_path = project_with_session / "broken_link.txt"
         os.symlink("/nonexistent/target/file.txt", str(link_path))
         contract = Contract(
@@ -1211,6 +1218,12 @@ class TestVerifierEdgeCases:
 
     def test_contains_no_matching_text(self):
         """'contains:' with no matching text in output returns False."""
-        assert _evaluate_pass_when("contains:NEEDLE", output="haystack without match") is False
-        assert _evaluate_pass_when("contains:NEEDLE", value="haystack without match") is False
+        assert (
+            _evaluate_pass_when("contains:NEEDLE", output="haystack without match")
+            is False
+        )
+        assert (
+            _evaluate_pass_when("contains:NEEDLE", value="haystack without match")
+            is False
+        )
         assert _evaluate_pass_when("contains:NEEDLE", output="", value="") is False

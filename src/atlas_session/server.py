@@ -12,8 +12,8 @@ import sys
 
 from fastmcp import FastMCP
 
-from .session import tools as session_tools
 from .contract import tools as contract_tools
+from .session import tools as session_tools
 
 mcp = FastMCP(
     "Atlas Session Lifecycle",

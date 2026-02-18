@@ -4,9 +4,6 @@ Tests the contract state machine from draft through active, verification,
 and settlement, including deterministic test runner behavior.
 """
 
-import json
-from pathlib import Path
-
 import httpx
 import pytest
 import respx

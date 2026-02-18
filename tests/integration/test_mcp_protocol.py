@@ -5,10 +5,6 @@ parameter handling issues, and verify the JSON wire format matches
 expected schemas.
 """
 
-import json
-import subprocess
-from pathlib import Path
-
 import pytest
 
 from fastmcp import Client
@@ -193,7 +189,9 @@ class TestContractToolsViaMCP:
 
         criteria = data["suggested_criteria"]
         assert isinstance(criteria, list)
-        assert len(criteria) >= 3  # has_commits, no_open_tasks, tests_pass, session_context_exists at minimum
+        assert (
+            len(criteria) >= 3
+        )  # has_commits, no_open_tasks, tests_pass, session_context_exists at minimum
 
         # Verify tests_pass appears (soul purpose contains "test")
         names = [c["name"] for c in criteria]

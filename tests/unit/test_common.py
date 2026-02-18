@@ -8,17 +8,12 @@ Covers:
   TestReadWriteJson: read_json() / write_json() round-trip and edge cases
 """
 
-import json
-from pathlib import Path
-
 import pytest
 
 from atlas_session.common.state import (
-    claude_md,
     find_section,
     parse_md_sections,
     read_json,
-    session_dir,
     write_json,
 )
 
@@ -87,13 +82,7 @@ class TestParseMdSections:
 
     def test_h3_headings_not_split(self):
         """### headings do not create new sections."""
-        content = (
-            "## Parent\n"
-            "\n"
-            "### Child\n"
-            "\n"
-            "Child content.\n"
-        )
+        content = "## Parent\n\n### Child\n\nChild content.\n"
         sections = parse_md_sections(content)
         assert len(sections) == 1
         assert "### Child" not in sections
@@ -216,11 +205,7 @@ class TestParseMdSectionsHostile:
 
     def test_heading_with_special_chars(self):
         """Heading with parentheses, brackets, dashes should parse fine."""
-        content = (
-            "## Section (deprecated) [v2] -- old\n"
-            "\n"
-            "Body text here.\n"
-        )
+        content = "## Section (deprecated) [v2] -- old\n\nBody text here.\n"
         sections = parse_md_sections(content)
         heading = "## Section (deprecated) [v2] -- old"
         assert heading in sections

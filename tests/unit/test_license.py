@@ -1,4 +1,5 @@
 """Tests for license validation and CLI."""
+
 from __future__ import annotations
 
 import json
@@ -6,10 +7,8 @@ import time
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
 
 from atlas_session.license import (
-    LICENSE_DIR,
     activate_license,
     is_license_valid,
     revoke_license,
@@ -21,9 +20,7 @@ class TestLicenseActivation:
 
     def test_activate_writes_license_file(self, tmp_path):
         """Activating with a valid key writes license.json."""
-        with patch.object(
-            Path, "__new__", return_value=tmp_path
-        ):
+        with patch.object(Path, "__new__", return_value=tmp_path):
             pass  # We'll use monkeypatch instead
 
     def test_activate_creates_license_dir(self, tmp_path, monkeypatch):
@@ -122,6 +119,7 @@ class TestLicenseValidation:
         cache.touch()
         # Age the cache beyond 24h
         import os
+
         old_time = time.time() - 86401
         os.utime(cache, (old_time, old_time))
         monkeypatch.setattr("atlas_session.license.LICENSE_DIR", license_dir)

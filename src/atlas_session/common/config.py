@@ -49,7 +49,6 @@ GOVERNANCE_SECTIONS = {
 - When creating new files, place them in the correct category directory
 - Do NOT dump new files at root unless they are actively being worked on
 - Periodically review root for stale files and move to correct category""",
-
     "Session Context Files": """\
 ## Session Context Files (MUST maintain)
 
@@ -59,13 +58,11 @@ After every session, update these files in `session-context/` with timestamp and
 - `session-context/CLAUDE-decisions.md` - Architecture decisions and rationale
 - `session-context/CLAUDE-patterns.md` - Established code patterns and conventions
 - `session-context/CLAUDE-troubleshooting.md` - Common issues and proven solutions""",
-
     "IMMUTABLE TEMPLATE RULES": """\
 ## IMMUTABLE TEMPLATE RULES
 
 > **DO NOT** edit the template files bundled with the plugin.
 > Templates are immutable source-of-truth. Only edit the copies in your project.""",
-
     "Ralph Loop": """\
 ## Ralph Loop
 

@@ -58,12 +58,25 @@ def project_with_soul_purpose(project_with_session):
 def project_with_git(project_with_session):
     """Project with session-context AND a git repo."""
     import subprocess
+
     subprocess.run(["git", "init"], cwd=project_with_session, capture_output=True)
-    subprocess.run(["git", "config", "user.email", "test@test.com"], cwd=project_with_session, capture_output=True)
-    subprocess.run(["git", "config", "user.name", "Test"], cwd=project_with_session, capture_output=True)
+    subprocess.run(
+        ["git", "config", "user.email", "test@test.com"],
+        cwd=project_with_session,
+        capture_output=True,
+    )
+    subprocess.run(
+        ["git", "config", "user.name", "Test"],
+        cwd=project_with_session,
+        capture_output=True,
+    )
     (project_with_session / "README.md").write_text("# Test Project\n")
     subprocess.run(["git", "add", "."], cwd=project_with_session, capture_output=True)
-    subprocess.run(["git", "commit", "-m", "initial"], cwd=project_with_session, capture_output=True)
+    subprocess.run(
+        ["git", "commit", "-m", "initial"],
+        cwd=project_with_session,
+        capture_output=True,
+    )
     return project_with_session
 
 

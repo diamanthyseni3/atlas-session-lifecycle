@@ -5,9 +5,7 @@ cycles by calling operations in sequence and verifying cumulative state.
 """
 
 import json
-from pathlib import Path
 
-import pytest
 
 from atlas_session.session.operations import (
     archive,
@@ -279,6 +277,7 @@ class TestGovernanceCacheRestoreCycle:
 
         # Cache file should be cleaned up
         from atlas_session.common.config import GOVERNANCE_CACHE_PATH
+
         assert not GOVERNANCE_CACHE_PATH.is_file()
 
 
@@ -372,7 +371,9 @@ class TestGovernanceCacheRestoreUnicode:
 
         # 4. Verify unicode survived
         restored_content = cmd.read_text()
-        assert "\u30d7\u30ed\u30b8\u30a7\u30af\u30c8" in restored_content  # "project" in Japanese
+        assert (
+            "\u30d7\u30ed\u30b8\u30a7\u30af\u30c8" in restored_content
+        )  # "project" in Japanese
         assert "\U0001f4c2" in restored_content  # folder emoji
         assert "\U0001f4dd" in restored_content  # memo emoji
         assert "\u26a0\ufe0f" in restored_content  # warning emoji

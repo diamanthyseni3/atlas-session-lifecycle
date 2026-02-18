@@ -7,12 +7,10 @@ Covers Tasks 2, 3, 4 of the test plan:
 """
 
 import json
-import shutil
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
-import pytest
 
 from atlas_session.session.operations import (
     archive,
@@ -35,7 +33,6 @@ from atlas_session.common.config import (
     GOVERNANCE_CACHE_PATH,
     LIFECYCLE_STATE_FILENAME,
     SESSION_FILES,
-    TEMPLATE_DIR,
 )
 
 
@@ -94,7 +91,9 @@ class TestPreflight:
 
     def test_project_signals_readme(self, project_dir):
         """Detects README.md in project signals."""
-        (project_dir / "README.md").write_text("# My Project\n\nA description of things.\n")
+        (project_dir / "README.md").write_text(
+            "# My Project\n\nA description of things.\n"
+        )
         result = preflight(str(project_dir))
         assert result["project_signals"]["has_readme"] is True
         assert "A description of things." in result["project_signals"]["readme_excerpt"]
@@ -191,7 +190,12 @@ class TestInit:
 
     def test_ralph_config_stored(self, project_dir):
         """init() stores ralph mode and intensity in active context."""
-        init(str(project_dir), "Test purpose", ralph_mode="automatic", ralph_intensity="long")
+        init(
+            str(project_dir),
+            "Test purpose",
+            ralph_mode="automatic",
+            ralph_intensity="long",
+        )
         ac = (project_dir / "session-context" / "CLAUDE-activeContext.md").read_text()
         assert "automatic" in ac
         assert "long" in ac
@@ -220,7 +224,9 @@ class TestValidate:
         result = validate(str(project_with_session))
         assert result["status"] == "ok"
         assert "CLAUDE-decisions.md" in result["repaired"]
-        assert (project_with_session / "session-context" / "CLAUDE-decisions.md").is_file()
+        assert (
+            project_with_session / "session-context" / "CLAUDE-decisions.md"
+        ).is_file()
 
     def test_repairs_multiple_missing(self, project_with_session):
         """Repairs multiple missing files."""
@@ -295,7 +301,10 @@ class TestReadContext:
         """Returns first 60 lines of active context as summary."""
         result = read_context(str(project_with_soul_purpose))
         assert "Active Context" in result["active_context_summary"]
-        assert "Widget factory" in result["active_context_summary"] or "widget factory" in result["active_context_summary"].lower()
+        assert (
+            "Widget factory" in result["active_context_summary"]
+            or "widget factory" in result["active_context_summary"].lower()
+        )
 
     def test_ralph_config_default(self, project_with_session):
         """Ralph config defaults to empty strings when no CLAUDE.md."""
@@ -316,7 +325,9 @@ class TestReadContext:
 
     def test_has_archived_purposes_true(self, project_with_soul_purpose):
         """has_archived_purposes is True when [CLOSED] entries exist."""
-        sp_file = project_with_soul_purpose / "session-context" / "CLAUDE-soul-purpose.md"
+        sp_file = (
+            project_with_soul_purpose / "session-context" / "CLAUDE-soul-purpose.md"
+        )
         sp_file.write_text(
             "# Soul Purpose\n\n"
             "Current purpose\n\n"
@@ -368,16 +379,24 @@ class TestArchive:
 
     def test_archives_old_purpose_with_closed(self, project_with_soul_purpose):
         """Archived purposes get [CLOSED] marker with date."""
-        result = archive(str(project_with_soul_purpose), "Build a widget factory", "New project")
+        result = archive(
+            str(project_with_soul_purpose), "Build a widget factory", "New project"
+        )
         assert result["status"] == "ok"
-        sp = (project_with_soul_purpose / "session-context" / "CLAUDE-soul-purpose.md").read_text()
+        sp = (
+            project_with_soul_purpose / "session-context" / "CLAUDE-soul-purpose.md"
+        ).read_text()
         assert "[CLOSED]" in sp
         assert "Build a widget factory" in sp
 
     def test_sets_new_purpose(self, project_with_soul_purpose):
         """New purpose is written at the top of the file."""
-        archive(str(project_with_soul_purpose), "Build a widget factory", "New purpose here")
-        sp = (project_with_soul_purpose / "session-context" / "CLAUDE-soul-purpose.md").read_text()
+        archive(
+            str(project_with_soul_purpose), "Build a widget factory", "New purpose here"
+        )
+        sp = (
+            project_with_soul_purpose / "session-context" / "CLAUDE-soul-purpose.md"
+        ).read_text()
         assert "New purpose here" in sp
         # New purpose should be before the [CLOSED] marker
         new_pos = sp.index("New purpose here")
@@ -386,9 +405,13 @@ class TestArchive:
 
     def test_resets_active_context(self, project_with_soul_purpose):
         """Active context is reset to template after archive."""
-        result = archive(str(project_with_soul_purpose), "Build a widget factory", "New purpose")
+        result = archive(
+            str(project_with_soul_purpose), "Build a widget factory", "New purpose"
+        )
         assert result["active_context_reset"] is True
-        ac = (project_with_soul_purpose / "session-context" / "CLAUDE-activeContext.md").read_text()
+        ac = (
+            project_with_soul_purpose / "session-context" / "CLAUDE-activeContext.md"
+        ).read_text()
         # Should be reset to template (contains placeholder text)
         assert "[DATE]" in ac or "Active Context" in ac
 
@@ -396,12 +419,16 @@ class TestArchive:
         """Archives with '(No active soul purpose)' when new_purpose is empty."""
         result = archive(str(project_with_soul_purpose), "Build a widget factory")
         assert result["new_purpose"] == "(No active soul purpose)"
-        sp = (project_with_soul_purpose / "session-context" / "CLAUDE-soul-purpose.md").read_text()
+        sp = (
+            project_with_soul_purpose / "session-context" / "CLAUDE-soul-purpose.md"
+        ).read_text()
         assert "(No active soul purpose)" in sp
 
     def test_archive_return_values(self, project_with_soul_purpose):
         """Verify return dict keys and values."""
-        result = archive(str(project_with_soul_purpose), "Build a widget factory", "New thing")
+        result = archive(
+            str(project_with_soul_purpose), "Build a widget factory", "New thing"
+        )
         assert result["archived_purpose"] == "Build a widget factory"
         assert result["new_purpose"] == "New thing"
         assert result["active_context_reset"] is True
@@ -447,7 +474,9 @@ class TestCacheGovernance:
     def test_reports_missing_sections(self, project_with_session):
         """Reports sections that are missing from CLAUDE.md."""
         # Create a minimal CLAUDE.md with no governance sections
-        (project_with_session / "CLAUDE.md").write_text("# CLAUDE.md\n\nMinimal file.\n")
+        (project_with_session / "CLAUDE.md").write_text(
+            "# CLAUDE.md\n\nMinimal file.\n"
+        )
         result = cache_governance(str(project_with_session))
         assert result["status"] == "ok"
         assert len(result["missing_sections"]) > 0
@@ -462,7 +491,9 @@ class TestRestoreGovernance:
         cache_governance(str(project_with_claude_md))
 
         # Wipe the CLAUDE.md to just a header
-        (project_with_claude_md / "CLAUDE.md").write_text("# CLAUDE.md\n\nStripped file.\n")
+        (project_with_claude_md / "CLAUDE.md").write_text(
+            "# CLAUDE.md\n\nStripped file.\n"
+        )
 
         # Restore
         result = restore_governance(str(project_with_claude_md))
@@ -471,7 +502,10 @@ class TestRestoreGovernance:
 
         # Verify content was restored
         content = (project_with_claude_md / "CLAUDE.md").read_text()
-        assert "Structure Maintenance Rules" in content or "Session Context Files" in content
+        assert (
+            "Structure Maintenance Rules" in content
+            or "Session Context Files" in content
+        )
 
     def test_handles_no_cache(self, project_with_claude_md):
         """Returns error when no governance cache exists."""
@@ -513,7 +547,9 @@ class TestEnsureGovernance:
     def test_includes_ralph_config(self, project_with_session):
         """Ralph config values are interpolated into the Ralph Loop section."""
         (project_with_session / "CLAUDE.md").write_text("# CLAUDE.md\n\nBasic file.\n")
-        ensure_governance(str(project_with_session), ralph_mode="automatic", ralph_intensity="long")
+        ensure_governance(
+            str(project_with_session), ralph_mode="automatic", ralph_intensity="long"
+        )
         content = (project_with_session / "CLAUDE.md").read_text()
         assert "automatic" in content
         assert "long" in content
@@ -790,7 +826,9 @@ class TestEdgeCases:
             "## [CLOSED] \u2014 2026-02-10\n\n"
             "First old purpose\n"
         )
-        result = archive(str(project_with_session), "Current active purpose", "Brand new purpose")
+        result = archive(
+            str(project_with_session), "Current active purpose", "Brand new purpose"
+        )
         assert result["status"] == "ok"
 
         content = sp_file.read_text()
@@ -822,11 +860,16 @@ class TestEdgeCases:
 
     def test_git_summary_no_tracking_branch(self, project_with_session):
         """git_summary with no remote tracking branch returns ahead=0 and behind=0."""
-        import subprocess
         proj = project_with_session
         subprocess.run(["git", "init"], cwd=proj, capture_output=True)
-        subprocess.run(["git", "config", "user.email", "test@test.com"], cwd=proj, capture_output=True)
-        subprocess.run(["git", "config", "user.name", "Test"], cwd=proj, capture_output=True)
+        subprocess.run(
+            ["git", "config", "user.email", "test@test.com"],
+            cwd=proj,
+            capture_output=True,
+        )
+        subprocess.run(
+            ["git", "config", "user.name", "Test"], cwd=proj, capture_output=True
+        )
         (proj / "file.txt").write_text("hello")
         subprocess.run(["git", "add", "."], cwd=proj, capture_output=True)
         subprocess.run(["git", "commit", "-m", "init"], cwd=proj, capture_output=True)
@@ -892,6 +935,7 @@ class TestPreflightHostile:
         from root_file_count and don't appear in project_signals.
         """
         import os
+
         os.symlink("/nonexistent/target", str(project_dir / "broken_link.txt"))
         os.symlink("/also/nonexistent", str(project_dir / "another_broken.py"))
         result = preflight(str(project_dir))
@@ -903,7 +947,9 @@ class TestPreflightHostile:
 class TestReadContextHostile:
     """Hostile file content that tries to break read_context()."""
 
-    def test_read_context_when_active_context_is_binary_garbage(self, project_with_session):
+    def test_read_context_when_active_context_is_binary_garbage(
+        self, project_with_session
+    ):
         """Binary garbage in CLAUDE-activeContext.md is handled gracefully.
 
         read_context uses errors='replace' so invalid UTF-8 bytes are

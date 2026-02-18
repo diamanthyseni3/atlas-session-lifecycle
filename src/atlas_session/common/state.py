@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 
-from .config import SESSION_DIR_NAME, CLAUDE_MD_NAME
+from .config import CLAUDE_MD_NAME, SESSION_DIR_NAME
 
 
 def session_dir(project_dir: str) -> Path:

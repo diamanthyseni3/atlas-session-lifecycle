@@ -3,6 +3,7 @@
 Handles local license activation, revocation, and cached validation.
 Stripe API calls are only made when cache expires (every 24h).
 """
+
 from __future__ import annotations
 
 import json

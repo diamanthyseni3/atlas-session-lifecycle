@@ -139,7 +139,7 @@ def _evaluate_pass_when(
         return bool(output)
 
     if pw.startswith("contains:"):
-        text = pw[len("contains:"):]
+        text = pw[len("contains:") :]
         if output:
             return text in output
         if isinstance(value, str):
