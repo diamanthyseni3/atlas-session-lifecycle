@@ -49,10 +49,13 @@ _ALLOWED_COMMANDS = {
     "sleep",
     "test",
     "printf",
+    # "print" is handled by python3 -c, not standalone
 }
 
-# Regex to detect shell metacharacters that could lead to injection
-_SHELL_METACHARACTERS = re.compile(r"[;&|`$()<>]")
+# Regex to detect shell metacharacters that could lead to command injection
+# These are the truly dangerous ones: command separators, subshells, redirections, expansions
+# Note: () are allowed for Python code, $ for shell vars in some contexts, * for wildcards
+_SHELL_METACHARACTERS = re.compile(r"[;&|`$<>]")
 
 
 def _validate_command(command: str) -> tuple[bool, str | None]:

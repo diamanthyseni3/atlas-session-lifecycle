@@ -283,7 +283,7 @@ def refresh_local_license() -> dict:
     """Refresh local license by validating with Stripe API.
 
     Reads customer_id from license.json, validates with Stripe,
-    and touches cache if valid.
+    and creates signed cache token if valid.
 
     Returns:
         dict with status and validation result
@@ -311,9 +311,26 @@ def refresh_local_license() -> dict:
     result = validate_license_with_stripe(customer_id)
 
     if result.get("status") == "active":
-        # Touch cache to extend validity
+        # Create signed cache token (matches license.py format)
         cache_path = LICENSE_DIR / CACHE_FILE
-        cache_path.touch()
+        expiry = time.time() + CACHE_TTL
+        # Inline HMAC to avoid circular import with license.py
+        import hashlib
+        import hmac
+
+        hmac_secret = hmac.new(
+            b"atlas-session-license-v1",
+            b"change-me-in-production",
+            hashlib.sha256,
+        ).digest()
+        message = f"{customer_id}:{expiry}".encode()
+        signature = hmac.new(hmac_secret, message, hashlib.sha256).hexdigest()
+        token_data = {
+            "customer_id": customer_id,
+            "expiry": expiry,
+            "signature": signature,
+        }
+        cache_path.write_text(json.dumps(token_data))
 
         return {
             "status": "ok",

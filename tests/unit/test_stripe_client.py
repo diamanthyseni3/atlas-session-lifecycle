@@ -329,8 +329,10 @@ class TestValidateLicenseWithStripe:
 class TestRefreshLocalLicense:
     """Tests for license refresh from Stripe."""
 
-    def test_refresh_success(self, tmp_path, monkeypatch):
-        """Refreshes license and touches cache on success."""
+    @patch("atlas_session.stripe_client._ensure_stripe")
+    @patch("atlas_session.stripe_client.stripe")
+    def test_refresh_success(self, mock_stripe, mock_ensure, tmp_path, monkeypatch):
+        """Refreshes license and creates signed cache token on success."""
         monkeypatch.setenv("STRIPE_SECRET_KEY", "sk_test_123")
         monkeypatch.setattr("atlas_session.stripe_client.LICENSE_DIR", tmp_path)
 
@@ -341,25 +343,30 @@ class TestRefreshLocalLicense:
         )
 
         # Mock Stripe validation
-        with patch("atlas_session.stripe_client.stripe") as mock_stripe:
-            mock_customer = MagicMock()
-            mock_stripe.Customer.retrieve.return_value = mock_customer
+        mock_customer = MagicMock()
+        mock_customer.id = "cus_123"
+        mock_stripe.Customer.retrieve.return_value = mock_customer
 
-            mock_sub = MagicMock()
-            mock_sub.current_period_end = int(time.time()) + 86400
-            mock_subscriptions = MagicMock()
-            mock_subscriptions.data = [mock_sub]
-            mock_stripe.Subscription.list.return_value = mock_subscriptions
+        mock_sub = MagicMock()
+        mock_sub.id = "sub_123"
+        mock_sub.current_period_end = int(time.time()) + 86400
+        mock_subscriptions = MagicMock()
+        mock_subscriptions.data = [mock_sub]
+        mock_stripe.Subscription.list.return_value = mock_subscriptions
 
-            result = refresh_local_license()
+        result = refresh_local_license()
 
-            assert result["status"] == "ok"
-            assert result["validated"] is True
-            assert result["license_type"] == "subscription"
+        assert result["status"] == "ok"
+        assert result["validated"] is True
+        assert result["license_type"] == "subscription"
 
-            # Cache should be touched
-            cache_file = tmp_path / ".license_cache"
-            assert cache_file.exists()
+        # Cache should be created with signed token
+        cache_file = tmp_path / ".license_cache"
+        assert cache_file.exists()
+        # Verify it has the new signed token format
+        cache_data = json.loads(cache_file.read_text())
+        assert "signature" in cache_data
+        assert cache_data["customer_id"] == "cus_123"
 
     def test_refresh_no_license(self, tmp_path, monkeypatch):
         """Returns error when no local license exists."""
@@ -383,7 +390,9 @@ class TestRefreshLocalLicense:
         assert result["status"] == "error"
         assert "No customer_id" in result["message"]
 
-    def test_refresh_inactive(self, tmp_path, monkeypatch):
+    @patch("atlas_session.stripe_client._ensure_stripe")
+    @patch("atlas_session.stripe_client.stripe")
+    def test_refresh_inactive(self, mock_stripe, mock_ensure, tmp_path, monkeypatch):
         """Returns inactive when Stripe validation fails."""
         monkeypatch.setenv("STRIPE_SECRET_KEY", "sk_test_123")
         monkeypatch.setattr("atlas_session.stripe_client.LICENSE_DIR", tmp_path)
