@@ -856,12 +856,11 @@ class TestCriterionModelHostile:
 class TestVerifierHostile:
     """Hostile edge cases targeting the verifier's shell execution."""
 
-    def test_shell_command_injection_executes_via_shell(self, project_with_session):
-        """shell=True means semicolons are interpreted by the shell.
+    def test_shell_command_injection_is_blocked(self, project_with_session):
+        """shlex.split means semicolons are NOT interpreted by the shell.
 
-        This test proves commands with ';' are concatenated by the shell.
-        We use a harmless injection: 'echo INJECTED' after 'false'.
-        The combined exit code is from the LAST command (echo = 0).
+        After the fix, 'false; echo INJECTED' is passed as a single
+        argument to 'false', which fails. The injection does not execute.
         """
         contract = Contract(
             soul_purpose="Test injection",
@@ -877,9 +876,28 @@ class TestVerifierHostile:
             ],
         )
         result = run_tests(str(project_with_session), contract)
-        # shell interprets ';', runs 'echo INJECTED' last, exit code 0
+        # shlex.split treats this as: ['false;', 'echo', 'INJECTED']
+        # 'false;' is not a valid command, so it fails
+        assert result["all_passed"] is False
+
+    def test_legitimate_command_still_works(self, project_with_session):
+        """Normal commands like 'echo hello' work correctly with shlex.split."""
+        contract = Contract(
+            soul_purpose="Test normal",
+            escrow=50,
+            criteria=[
+                Criterion(
+                    name="normal",
+                    type=CriterionType.SHELL,
+                    command="echo hello",
+                    pass_when="exit_code == 0",
+                    weight=1.0,
+                ),
+            ],
+        )
+        result = run_tests(str(project_with_session), contract)
         assert result["all_passed"] is True
-        assert "INJECTED" in result["results"][0]["output"]
+        assert "hello" in result["results"][0]["output"]
 
     def test_shell_timeout_fires_on_slow_command(self, project_with_session):
         """Command that sleeps past the 120s timeout should fail gracefully.

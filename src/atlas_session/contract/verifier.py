@@ -5,6 +5,7 @@ Runs each criterion and returns pass/fail results — no AI judgment.
 
 from __future__ import annotations
 
+import shlex
 import subprocess
 from pathlib import Path
 
@@ -63,9 +64,9 @@ def _run_shell(project_dir: str, name: str, command: str, pass_when: str, weight
         return {"name": name, "passed": False, "output": "No command specified", "weight": weight}
 
     try:
+        args = shlex.split(command)
         proc = subprocess.run(
-            command,
-            shell=True,
+            args,
             cwd=project_dir,
             capture_output=True,
             text=True,
