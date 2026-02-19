@@ -12,13 +12,14 @@ import sys
 
 from fastmcp import FastMCP
 
+from . import __version__
 from .contract import tools as contract_tools
 from .session import tools as session_tools
 from .stripe import tools as stripe_tools
 
 mcp = FastMCP(
     "Atlas Session Lifecycle",
-    version="4.0.0",
+    version=__version__,
     instructions=(
         "MCP server for AI session lifecycle management. "
         "Manages session context, soul purpose tracking, governance, "

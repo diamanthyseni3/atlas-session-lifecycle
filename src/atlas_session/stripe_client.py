@@ -314,17 +314,13 @@ def refresh_local_license() -> dict:
         # Create signed cache token (matches license.py format)
         cache_path = LICENSE_DIR / CACHE_FILE
         expiry = time.time() + CACHE_TTL
-        # Inline HMAC to avoid circular import with license.py
         import hashlib
         import hmac
 
-        hmac_secret = hmac.new(
-            b"atlas-session-license-v1",
-            b"change-me-in-production",
-            hashlib.sha256,
-        ).digest()
+        from atlas_session.license import _HMAC_SECRET
+
         message = f"{customer_id}:{expiry}".encode()
-        signature = hmac.new(hmac_secret, message, hashlib.sha256).hexdigest()
+        signature = hmac.new(_HMAC_SECRET, message, hashlib.sha256).hexdigest()
         token_data = {
             "customer_id": customer_id,
             "expiry": expiry,

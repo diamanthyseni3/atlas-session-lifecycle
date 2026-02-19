@@ -41,15 +41,14 @@ def _resolve_project_dir(project_dir: str) -> Path:
         Resolved absolute Path object
 
     Raises:
-        ValueError: If path contains suspicious components that could
-                    lead to path traversal attacks.
+        ValueError: If resolved path is outside home directory or /tmp.
     """
     path = Path(project_dir).resolve()
 
-    # Check for suspicious patterns after resolution
-    # Bound checking: ensure we don't escape intended workspace
-    # (For now, just resolve - in production you might want to check
-    # against an allowed base directory)
+    home = Path.home().resolve()
+    tmp = Path("/tmp").resolve()
+    if not (str(path).startswith(str(home)) or str(path).startswith(str(tmp))):
+        raise ValueError(f"Project directory must be under home or /tmp: {path}")
 
     return path
 
@@ -182,6 +181,21 @@ def _detect_project_signals(root: Path, root_files: list[Path]) -> dict:
                     break
         except PermissionError:
             pass
+
+    # CI provider detection
+    ci_indicators = [
+        (root / ".github" / "workflows", "github-actions"),
+        (root / ".gitlab-ci.yml", "gitlab-ci"),
+        (root / "Jenkinsfile", "jenkins"),
+        (root / ".circleci", "circleci"),
+    ]
+    signals["has_ci"] = False
+    signals["ci_provider"] = ""
+    for ci_path, provider in ci_indicators:
+        if ci_path.exists():
+            signals["has_ci"] = True
+            signals["ci_provider"] = provider
+            break
 
     # Empty project detection
     has_manifests = any(

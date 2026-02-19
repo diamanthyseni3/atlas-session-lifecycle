@@ -20,10 +20,10 @@ set -euo pipefail
 REPO_OWNER="anombyte93"
 REPO_NAME="atlas-session-lifecycle"
 SKILL_NAME="start"
-VERSION="2.0.0"
+VERSION="4.1.0"
 # SECURITY: Pin to specific commit hash for integrity
 # Update this when releasing new versions
-PINNED_COMMIT="8c4cbc5feat-productization"
+PINNED_COMMIT="8c4cbc5"
 SKILL_DIR="${SKILL_DIR:-${HOME}/.claude/skills/${SKILL_NAME}}"
 PLUGIN_DIR="${HOME}/.claude/plugins/${REPO_NAME}"
 TEMPLATE_DIR="${HOME}/claude-session-init-templates"

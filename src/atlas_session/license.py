@@ -12,6 +12,8 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import logging
+import os
 import time
 from pathlib import Path
 
@@ -20,10 +22,16 @@ LICENSE_FILE = "license.json"
 CACHE_FILE = ".license_cache"
 CACHE_TTL = 86400  # 24 hours
 
-# HMAC secret for signing license tokens (in production, use env var)
+# HMAC secret for signing license tokens
+# In production, set ATLAS_HMAC_SECRET env var
+_hmac_input = os.environ.get("ATLAS_HMAC_SECRET", "").encode() or b"change-me-in-production"
+if not os.environ.get("ATLAS_HMAC_SECRET"):
+    logging.getLogger(__name__).warning(
+        "ATLAS_HMAC_SECRET not set — using insecure default. Set this in production."
+    )
 _HMAC_SECRET = hmac.new(
     b"atlas-session-license-v1",
-    b"change-me-in-production",
+    _hmac_input,
     hashlib.sha256,
 ).digest()
 
